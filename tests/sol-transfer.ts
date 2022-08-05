@@ -4,6 +4,7 @@ import { SolTransfer } from "../target/types/sol_transfer";
 const { SystemProgram, LAMPORTS_PER_SOL } = anchor.web3;
 
 import { PublicKey } from "@solana/web3.js";
+import { assert, expect } from "chai";
 
 describe("sol-transfer", () => {
   // Configure the client to use the local cluster.
@@ -23,7 +24,9 @@ describe("sol-transfer", () => {
 
   async function checkSolBalance(pubKey: PublicKey) {
     let bal = await provider.connection.getBalance(pubKey);
-    console.log(`balance:  ${bal / LAMPORTS_PER_SOL} SOL`);
+    const balInSol = bal / LAMPORTS_PER_SOL;
+    console.log(`balance:  ${balInSol} SOL`);
+    return balInSol;
   }
 
   it("Is initialized!", async () => {
@@ -37,7 +40,8 @@ describe("sol-transfer", () => {
       "A7CdcQ9BaehNeZuTTgHe66LhjW2f8BW5fa2Jf3R6oDqm"
     );
 
-    let amount = 10 * LAMPORTS_PER_SOL;
+    let amountInSol = 10;
+    let amount = amountInSol * LAMPORTS_PER_SOL;
     console.log("Will transfer : ", amount);
     const res = await addFunds(
       provider.wallet.publicKey,
@@ -47,7 +51,7 @@ describe("sol-transfer", () => {
 
     console.log('>>>>> Before transfer >>>>>>>')
     console.log('Sender :')
-    await checkSolBalance(provider.wallet.publicKey)
+    const senderInitBalance = await checkSolBalance(provider.wallet.publicKey)
 
     console.log('Receiver: ')
     await checkSolBalance(recevierPubKey)
@@ -63,13 +67,17 @@ describe("sol-transfer", () => {
 
     console.log("Transfer transaction signature", tx);
 
-
     console.log('>>>>> After transfer >>>>>>>')
     console.log('Sender :')
-    await checkSolBalance(provider.wallet.publicKey)
+    const senderBalance = await checkSolBalance(provider.wallet.publicKey)
 
+    assert.ok(senderBalance < senderInitBalance - amountInSol);
     console.log('Receiver: ')
-    await checkSolBalance(recevierPubKey)
+    const bal = await checkSolBalance(recevierPubKey);
+
+    assert.ok(bal == 10);
+
+    
 
   });
 });
