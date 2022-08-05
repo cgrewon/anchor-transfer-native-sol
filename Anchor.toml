@@ -1,0 +1,17 @@
+[features]
+seeds = false
+[programs.localnet]
+sol_transfer = "5jomVtGNTKPuMLvv8erAXHBVjJsTwuv5kF6dT83ECyN9"
+
+[programs.devnet]
+sol_transfer = "5jomVtGNTKPuMLvv8erAXHBVjJsTwuv5kF6dT83ECyN9"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "/Users/rtdev-mac/my-solana-wallet/my-keypair.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
